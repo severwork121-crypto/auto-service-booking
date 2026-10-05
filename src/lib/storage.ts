@@ -6,10 +6,8 @@ const MAX_SIZE = 5 * 1024 * 1024;
 export async function uploadTenantImage(
   slug: string,
   file: File,
-  kind: 'hero' | 'logo'
+  kind: 'hero' | 'logo' | 'gallery'
 ): Promise<string> {
-  console.log('[upload] начало', { slug, kind, size: file.size, type: file.type });
-
   if (!file.type.startsWith('image/')) {
     throw new Error('Файл должен быть изображением');
   }
@@ -17,18 +15,15 @@ export async function uploadTenantImage(
     throw new Error('Файл больше 5 МБ');
   }
 
-  // Проверяем, что есть сессия
   const { data: session } = await supabase.auth.getSession();
-  console.log('[upload] сессия:', !!session.session, 'user:', session.session?.user?.email);
   if (!session.session) {
     throw new Error('Вы не авторизованы. Войдите заново.');
   }
 
   const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
   const path = `${slug}/${kind}-${Date.now()}.${ext}`;
-  console.log('[upload] путь:', path);
 
-  const { error, data } = await supabase.storage
+  const { error } = await supabase.storage
     .from(BUCKET)
     .upload(path, file, {
       upsert: true,
@@ -36,14 +31,8 @@ export async function uploadTenantImage(
       contentType: file.type,
     });
 
-  console.log('[upload] результат:', { error, data });
+  if (error) throw new Error(`Storage: ${error.message}`);
 
-  if (error) {
-    throw new Error(`Storage: ${error.message}`);
-  }
-
-  const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
-  console.log('[upload] публичный URL:', urlData.publicUrl);
-
-  return urlData.publicUrl;
+  const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+  return data.publicUrl;
 }
