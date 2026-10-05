@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/favicon.svg'],
+      includeAssets: ['icons/favicon.svg', 'fonts/Nuqun-Regular.ttf'],
       manifest: {
         name: 'АвтоСервис — Запись',
         short_name: 'АвтоСервис',
@@ -30,19 +30,13 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Кэшируем только статику, БЕЗ html
-        globPatterns: ['**/*.{js,css,ico,png,svg,woff2}'],
-        // SPA: при заходе на /s/studio-abc/ отдаём index.html только при офлайне
-        navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/rest/, /^\/storage/, /^\/auth/],
-        // Новый service worker активируется сразу, без перезагрузки
+        globPatterns: ['**/*.{js,css,ico,png,svg,woff2,ttf}'],
+        navigateFallback: null,
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
-            // HTML-страницы: сначала сеть, кэш только при офлайне
-            // networkTimeoutSeconds: 3 — если сеть медленнее 3 сек, отдаём из кэша
             urlPattern: ({ request }) => request.mode === 'navigate',
             handler: 'NetworkFirst',
             options: {
@@ -52,7 +46,6 @@ export default defineConfig({
             },
           },
           {
-            // Supabase REST API: свежие данные при любой возможности
             urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/.*/i,
             handler: 'NetworkFirst',
             options: {
@@ -62,7 +55,6 @@ export default defineConfig({
             },
           },
           {
-            // Фото из Storage: кэшируем надолго (они редко меняются)
             urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/object\/public\/.*/i,
             handler: 'CacheFirst',
             options: {
@@ -71,7 +63,6 @@ export default defineConfig({
             },
           },
           {
-            // Google Fonts
             urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
             handler: 'CacheFirst',
             options: {
