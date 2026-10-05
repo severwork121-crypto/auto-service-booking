@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTenant } from '@/hooks/useTenant';
-import { useBookings } from '@/hooks/useBookings';
+import { useBookings, type BookingWithService } from '@/hooks/useBookings';
 import { FadeIn } from '@/components/ui/FadeIn';
 import {
   CalendarCheck,
@@ -12,22 +12,46 @@ import {
   ArrowRight,
 } from '@phosphor-icons/react';
 
+/**
+ * Чистая сумма оплаты по записи.
+ * - оплата (paid) → +amount
+ * - возврат (refund) → −amount
+ * - нет оплаты → 0
+ */
+function netPayment(b: BookingWithService): number {
+  const amount = Number(b.payment_amount) || 0;
+  if (amount <= 0) return 0;
+  return b.payment_type === 'refund' ? -amount : amount;
+}
+
 interface MetricCardProps {
   icon: React.ReactNode;
   label: string;
   value: string;
   hint?: string;
   accent?: boolean;
+  danger?: boolean;
 }
 
-function MetricCard({ icon, label, value, hint, accent = false }: MetricCardProps) {
+function MetricCard({ icon, label, value, hint, accent = false, danger = false }: MetricCardProps) {
+  const color = danger ? '#f87171' : accent ? '#7db4ff' : '#fff';
   return (
     <div
       style={{
         padding: 20,
         borderRadius: 16,
-        background: accent ? 'rgba(70,144,255,0.08)' : 'rgba(255,255,255,0.035)',
-        border: `1px solid ${accent ? 'rgba(70,144,255,0.25)' : 'rgba(255,255,255,0.08)'}`,
+        background: danger
+          ? 'rgba(239,68,68,0.06)'
+          : accent
+            ? 'rgba(70,144,255,0.08)'
+            : 'rgba(255,255,255,0.035)',
+        border: `1px solid ${
+          danger
+            ? 'rgba(239,68,68,0.25)'
+            : accent
+              ? 'rgba(70,144,255,0.25)'
+              : 'rgba(255,255,255,0.08)'
+        }`,
         display: 'flex',
         flexDirection: 'column',
         gap: 10,
@@ -51,7 +75,7 @@ function MetricCard({ icon, label, value, hint, accent = false }: MetricCardProp
           fontWeight: 800,
           letterSpacing: '-0.03em',
           lineHeight: 1.1,
-          color: accent ? '#7db4ff' : '#fff',
+          color,
         }}
       >
         {value}
@@ -77,37 +101,42 @@ export function DashboardPage() {
     const day = weekStart.getDay() === 0 ? 7 : weekStart.getDay();
     weekStart.setDate(weekStart.getDate() - (day - 1));
 
-    // Метрики за сегодня
+    // --- Сегодня ---
     const todayBookings = bookings.filter((b) => {
       const d = new Date(b.start_at);
       return d >= todayStart && d < todayEnd;
     });
 
+    // Выручка — сумма по ВСЕМ записям за сегодня (с учётом знака)
+    const todayRevenue = todayBookings.reduce((sum, b) => sum + netPayment(b), 0);
+
+    // Оплачено / возвращено отдельно — для разбивки
+    const todayPaid = todayBookings
+      .filter((b) => b.payment_type !== 'refund')
+      .reduce((sum, b) => sum + (Number(b.payment_amount) || 0), 0);
+    const todayRefunded = todayBookings
+      .filter((b) => b.payment_type === 'refund')
+      .reduce((sum, b) => sum + (Number(b.payment_amount) || 0), 0);
+
     const todayDone = todayBookings.filter((b) => b.status === 'done');
-    const todayRevenue = todayDone.reduce(
-      (sum, b) => sum + (Number(b.payment_amount) || 0),
-      0
-    );
     const todayInWork = todayBookings.filter((b) => b.status === 'arrived').length;
 
-    // Метрики за неделю
+    // --- Неделя ---
     const weekBookings = bookings.filter((b) => {
       const d = new Date(b.start_at);
       return d >= weekStart && d < todayEnd;
     });
-    const weekDone = weekBookings.filter((b) => b.status === 'done');
-    const weekRevenue = weekDone.reduce(
-      (sum, b) => sum + (Number(b.payment_amount) || 0),
-      0
-    );
 
-    // Ближайшие предстоящие сегодня
+    const weekRevenue = weekBookings.reduce((sum, b) => sum + netPayment(b), 0);
+    const weekDone = weekBookings.filter((b) => b.status === 'done');
+
+    // --- Ближайшие сегодня ---
     const upcomingToday = todayBookings
       .filter((b) => new Date(b.end_at) >= now && b.status !== 'cancelled')
       .sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime())
       .slice(0, 5);
 
-    // Загрузка по дням недели
+    // --- Загрузка по дням ---
     const weekDays: { label: string; count: number }[] = [];
     const dayLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
     for (let i = 0; i < 7; i++) {
@@ -126,8 +155,10 @@ export function DashboardPage() {
     return {
       todayBookings,
       todayDone,
-      todayRevenue,
       todayInWork,
+      todayRevenue,
+      todayPaid,
+      todayRefunded,
       weekBookings,
       weekDone,
       weekRevenue,
@@ -194,11 +225,14 @@ export function DashboardPage() {
               label="Выручка"
               value={stats.todayRevenue.toLocaleString('ru-RU') + ' ₽'}
               hint={
-                stats.todayDone.length > 0
-                  ? `${stats.todayDone.length} работ завершено`
-                  : 'пока нет оплат'
+                stats.todayRefunded > 0
+                  ? `${stats.todayPaid.toLocaleString('ru-RU')} ₽ − возврат ${stats.todayRefunded.toLocaleString('ru-RU')} ₽`
+                  : stats.todayDone.length > 0
+                    ? `${stats.todayDone.length} работ завершено`
+                    : 'пока нет оплат'
               }
-              accent
+              accent={stats.todayRevenue >= 0}
+              danger={stats.todayRevenue < 0}
             />
           </div>
         </section>
@@ -236,7 +270,8 @@ export function DashboardPage() {
               icon={<CurrencyRub size={16} weight="bold" />}
               label="Выручка"
               value={stats.weekRevenue.toLocaleString('ru-RU') + ' ₽'}
-              accent
+              accent={stats.weekRevenue >= 0}
+              danger={stats.weekRevenue < 0}
             />
           </div>
         </section>
