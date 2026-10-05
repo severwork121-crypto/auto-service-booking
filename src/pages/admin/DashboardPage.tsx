@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTenant } from '@/hooks/useTenant';
 import { useBookings } from '@/hooks/useBookings';
-import { BottomNav } from '@/components/layout/BottomNav';
 import { FadeIn } from '@/components/ui/FadeIn';
 import {
   CalendarCheck,
@@ -108,7 +107,7 @@ export function DashboardPage() {
       .sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime())
       .slice(0, 5);
 
-    // Загрузка по дням недели (для мини-графика)
+    // Загрузка по дням недели
     const weekDays: { label: string; count: number }[] = [];
     const dayLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
     for (let i = 0; i < 7; i++) {
@@ -462,8 +461,6 @@ export function DashboardPage() {
           )}
         </section>
       </FadeIn>
-
-      <BottomNav slug={slug} />
     </div>
   );
 }
