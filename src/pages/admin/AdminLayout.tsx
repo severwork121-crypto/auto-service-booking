@@ -22,7 +22,6 @@ export function AdminLayout() {
   const [authed, setAuthed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Подписка на новые записи
   useNewBookingNotifications(tenant?.id);
 
   useEffect(() => {
@@ -65,10 +64,9 @@ export function AdminLayout() {
 
   return (
     <>
-      {/* Тостер — рендерит все уведомления */}
       <Toaster
-         position="top-right"
-         toastOptions={{
+        position="bottom-right"
+        toastOptions={{
           duration: 10000,
           style: {
             background: 'transparent',
@@ -117,7 +115,9 @@ export function AdminLayout() {
           }
         >
           {!isMobile && (
-            <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 16 }}>Кабинет</div>
+            <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 16 }}>
+              Кабинет
+            </div>
           )}
 
           {items.map((i) => (

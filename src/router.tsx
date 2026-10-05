@@ -8,6 +8,7 @@ import { LoginPage } from '@/pages/admin/LoginPage';
 import { DashboardPage } from '@/pages/admin/DashboardPage';
 import { AdminBookingsPage } from '@/pages/admin/BookingsPage';
 import { AdminServicesPage } from '@/pages/admin/ServicesPage';
+import { AdminGalleryPage } from '@/pages/admin/GalleryPage';
 import { AdminSettingsPage } from '@/pages/admin/SettingsPage';
 
 export const router = createBrowserRouter([
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
           { index: true, element: <DashboardPage /> },
           { path: 'bookings', element: <AdminBookingsPage /> },
           { path: 'services', element: <AdminServicesPage /> },
+          { path: 'gallery', element: <AdminGalleryPage /> },
           { path: 'settings', element: <AdminSettingsPage /> },
         ],
       },
