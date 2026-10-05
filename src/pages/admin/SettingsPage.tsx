@@ -307,7 +307,7 @@ function HoursTab({ tenant }: { tenant: Tenant }) {
 function PhotosTab({ tenant, slug }: { tenant: Tenant; slug: string }) {
   const update = useUpdateTenant();
   const [heroUrl, setHeroUrl] = useState(tenant.hero_image_url ?? '');
-  const [logoUrl, setLogoUrl] = useState(tenant.logo_image_url ?? tenant.logo_url ?? '');
+  const [logoUrl, setLogoUrl] = useState(tenant.logo_url ?? '');
   const [uploading, setUploading] = useState<'hero' | 'logo' | null>(null);
 
   useEffect(() => {
