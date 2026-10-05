@@ -336,3 +336,21 @@ button:not(:disabled):active {
     box-shadow: 0 0 20px rgba(70, 144, 255, 0.6);
   }
 }
+
+/* Лоадер — вращение колец и пульсация точки */
+@keyframes loadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loadingPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.7);
+  }
+}

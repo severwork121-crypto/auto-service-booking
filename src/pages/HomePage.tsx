@@ -3,16 +3,20 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useTenant } from '@/hooks/useTenant';
 import { useServices } from '@/hooks/useServices';
+import { useGallery } from '@/hooks/useGallery';
 import { HeroSection } from '@/components/home/HeroSection';
 import { InfoCards } from '@/components/home/InfoCards';
+import { GallerySection } from '@/components/home/GallerySection';
 import { FadeIn } from '@/components/ui/FadeIn';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { AssistantChat } from '@/components/assistant/AssistantChat';
+import { LoadingScreen } from '@/components/ui/LoadingScreen';
 
 export function HomePage() {
   const { slug = '' } = useParams();
   const { data: tenant, isLoading } = useTenant(slug);
   const { data: services } = useServices(tenant?.id);
+  const { data: gallery = [] } = useGallery(tenant?.id);
   const { data: cards = [] } = useQuery({
     queryKey: ['info-cards', tenant?.id],
     queryFn: async () => {
@@ -27,8 +31,8 @@ export function HomePage() {
     enabled: !!tenant?.id,
   });
 
-  if (isLoading) return <div className="container" style={{ padding: 40 }}>Загрузка…</div>;
-  if (!tenant) return <div className="container" style={{ padding: 40 }}>Студия не найдена</div>;
+  if (isLoading) return <LoadingScreen fullHeight label="Загрузка студии" />;
+  if (!tenant) return <LoadingScreen fullHeight label="Студия не найдена" />;
 
   return (
     <div className="page">
@@ -67,6 +71,8 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      <GallerySection items={gallery} />
 
       <section className="section">
         <div className="container">
