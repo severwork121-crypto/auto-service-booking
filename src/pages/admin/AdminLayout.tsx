@@ -67,8 +67,8 @@ export function AdminLayout() {
     <>
       {/* Тостер — рендерит все уведомления */}
       <Toaster
-         position="bottom-right"
-        toastOptions={{
+         position="top-right"
+         toastOptions={{
           duration: 10000,
           style: {
             background: 'transparent',
