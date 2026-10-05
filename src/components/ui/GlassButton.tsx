@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -7,33 +7,8 @@ interface Props {
 }
 
 export function GlassButton({ children, onClick, className = '' }: Props) {
-  const ref = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const mod = await import('liquid-gl');
-        const liquidGL = (mod as any).default ?? mod;
-        if (!cancelled && ref.current && typeof liquidGL === 'function') {
-          liquidGL(ref.current, {
-            refraction: 0.15,
-            frost: 0.3,
-            edgeHighlight: true,
-          });
-        }
-      } catch {
-        // liquid-gl недоступен — используется CSS-фолбэк
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   return (
     <button
-      ref={ref}
       onClick={onClick}
       className={className}
       style={{
@@ -64,6 +39,12 @@ export function GlassButton({ children, onClick, className = '' }: Props) {
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow =
           'inset 0 1px 0 rgba(255,255,255,0.18), 0 4px 24px rgba(70,144,255,0.25)';
+      }}
+      onMouseDown={(e) => {
+        e.currentTarget.style.transform = 'scale(0.98)';
+      }}
+      onMouseUp={(e) => {
+        e.currentTarget.style.transform = 'scale(1)';
       }}
     >
       {children}
