@@ -310,3 +310,15 @@ button:not(:disabled):active {
     scroll-behavior: auto;
   }
 }
+
+/* Пульсация индикатора в toast-уведомлении */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.3);
+  }
+}
