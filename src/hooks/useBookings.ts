@@ -50,35 +50,54 @@ export function useUpdateBookingStatus() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, status }: { id: string; status: BookingWithService['status'] }) => {
-      console.log('→ Обновляем статус:', { id, status });
-
-      // Проверяем, кто мы
-      const { data: session } = await supabase.auth.getSession();
-      console.log('→ Есть сессия:', !!session.session, 'user:', session.session?.user?.email);
-
       const { data, error } = await supabase
         .from('bookings')
         .update({ status })
         .eq('id', id)
-        .select(); // ← важно: возвращает обновлённую строку
-
-      console.log('→ Ответ Supabase:', { data, error, updated: data?.length ?? 0 });
-
+        .select();
       if (error) throw error;
-
-      // Если data пустой — RLS отклонил обновление молча
       if (!data || data.length === 0) {
-        throw new Error('RLS: обновление отклонено. Проверь политики для bookings.');
+        throw new Error('RLS: обновление отклонено');
       }
-
       return data;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['bookings'] });
     },
     onError: (err) => {
-      console.error('❌ Ошибка:', err);
       alert('Не удалось обновить: ' + (err as Error).message);
+    },
+  });
+}
+
+export function useUpdateBookingPayment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      amount,
+      type,
+    }: {
+      id: string;
+      amount: number;
+      type: 'paid' | 'refund';
+    }) => {
+      const { data, error } = await supabase
+        .from('bookings')
+        .update({ payment_amount: amount, payment_type: type })
+        .eq('id', id)
+        .select();
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        throw new Error('RLS: обновление отклонено');
+      }
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['bookings'] });
+    },
+    onError: (err) => {
+      alert('Не удалось сохранить оплату: ' + (err as Error).message);
     },
   });
 }
