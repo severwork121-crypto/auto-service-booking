@@ -313,21 +313,27 @@ function PhotosTab({ tenant, slug }: { tenant: Tenant; slug: string }) {
   useEffect(() => {
     setHeroUrl(tenant.hero_image_url ?? '');
     setLogoUrl(tenant.logo_url ?? '');
-  }, [tenant.id]);
+  }, [tenant.id, tenant.hero_image_url, tenant.logo_url]);
 
   async function handleUpload(kind: 'hero' | 'logo', file: File) {
     try {
       setUploading(kind);
       const url = await uploadTenantImage(slug, file, kind);
-      if (kind === 'hero') {
-        setHeroUrl(url);
-        update.mutate({ id: tenant.id, hero_image_url: url });
-      } else {
-        setLogoUrl(url);
-        update.mutate({ id: tenant.id, logo_url: url });
-      }
+      console.log('[photos] URL получен, пишем в БД:', url);
+
+      const patch =
+        kind === 'hero'
+          ? { id: tenant.id, hero_image_url: url }
+          : { id: tenant.id, logo_url: url };
+
+      await update.mutateAsync(patch);
+      console.log('[photos] успешно сохранено');
+
+      if (kind === 'hero') setHeroUrl(url);
+      else setLogoUrl(url);
     } catch (err) {
-      alert((err as Error).message);
+      console.error('[photos] ошибка:', err);
+      alert('Ошибка загрузки: ' + (err as Error).message);
     } finally {
       setUploading(null);
     }
