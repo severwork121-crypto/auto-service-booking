@@ -7,3 +7,18 @@ dist
 .vercel
 
 .vercel
+
+# Build artifacts
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+dist
+dist-ssr
+
+# Supabase temp
+supabase/.temp
+
+# Editor
+.vscode/settings.json
+
+# Suspicious
+pass
