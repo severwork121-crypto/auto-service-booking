@@ -22,7 +22,7 @@ export function HeroSection({
             padding: 10,
           }}
         >
-          {/* Внутренний контейнер с двойной рамкой — усиливает "стекло" */}
+          {/* Внутренний контейнер с двойной рамкой */}
           <div
             style={{
               borderRadius: 22,
@@ -31,72 +31,75 @@ export function HeroSection({
               border: '1px solid rgba(255,255,255,0.06)',
             }}
           >
-            {/* Фото машины */}
+            {/* Фото с наложенным текстом снизу */}
             <div
               style={{
                 position: 'relative',
-                aspectRatio: '16 / 10',
+                aspectRatio: '16 / 11',
                 backgroundColor: '#0a0a0a',
                 backgroundImage: heroImage ? `url(${heroImage})` : 'none',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               }}
             >
-              {/* Лёгкий градиент снизу, чтобы фото мягко переходило в контент */}
+              {/* Градиент снизу — чтобы текст читался */}
               <div
                 style={{
                   position: 'absolute',
                   inset: 0,
                   background:
-                    'linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%)',
+                    'linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.92) 100%)',
                   pointerEvents: 'none',
                 }}
               />
-            </div>
 
-            {/* Текстовый блок + кнопка */}
-            <div
-              style={{
-                padding: '22px 22px 24px',
-                display: 'grid',
-                gap: 14,
-              }}
-            >
-              <h1
+              {/* Текст поверх фото, прижат к низу */}
+              <div
                 style={{
-                  fontSize: 26,
-                  fontWeight: 800,
-                  margin: 0,
-                  letterSpacing: '-0.03em',
-                  lineHeight: 1.15,
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  padding: '20px 22px 22px',
+                  display: 'grid',
+                  gap: 8,
                 }}
               >
-                {tenant.name}
-              </h1>
-
-              {tenant.description && (
-                <p
+                <h1
                   style={{
-                    fontSize: 14,
-                    opacity: 0.7,
+                    fontSize: 26,
+                    fontWeight: 800,
                     margin: 0,
-                    lineHeight: 1.55,
-                    maxWidth: 560,
+                    letterSpacing: '-0.03em',
+                    lineHeight: 1.15,
+                    textShadow: '0 2px 12px rgba(0,0,0,0.7)',
                   }}
                 >
-                  {tenant.description}
-                </p>
-              )}
+                  {tenant.name}
+                </h1>
 
-              {/* Кнопка "Записаться" — растянута на всю ширину */}
-              <div style={{ marginTop: 4 }}>
-                <GlassButton
-                  onClick={() => navigate(`/s/${tenant.slug}/services`)}
-                  className="w-full"
-                >
-                  Записаться
-                </GlassButton>
+                {tenant.description && (
+                  <p
+                    style={{
+                      fontSize: 14,
+                      opacity: 0.9,
+                      margin: 0,
+                      lineHeight: 1.55,
+                      maxWidth: 560,
+                      textShadow: '0 1px 8px rgba(0,0,0,0.7)',
+                    }}
+                  >
+                    {tenant.description}
+                  </p>
+                )}
               </div>
+            </div>
+
+            {/* Кнопка под фото — внутри стеклянного блока */}
+            <div style={{ padding: '18px 22px 22px' }}>
+              <GlassButton onClick={() => navigate(`/s/${tenant.slug}/services`)}>
+                Записаться
+              </GlassButton>
             </div>
           </div>
         </div>
