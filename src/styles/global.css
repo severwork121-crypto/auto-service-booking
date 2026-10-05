@@ -1,26 +1,26 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Переменные shadcn (тёмная тема с акцентом #4690FF)
+   shadcn: тёмная тема, синий акцент #4690FF
    ============================================================ */
 @layer base {
   :root {
-    --background: 0 0% 0%;
+    --background: 220 40% 3%;
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 6%;
+    --card: 220 30% 6%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 6%;
+    --popover: 220 30% 6%;
     --popover-foreground: 0 0% 98%;
 
     --primary: 217 100% 64%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 12%;
+    --secondary: 220 20% 12%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 0 0% 12%;
+    --muted: 220 20% 12%;
     --muted-foreground: 0 0% 65%;
 
     --accent: 217 100% 64%;
@@ -29,8 +29,8 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 16%;
-    --input: 0 0% 16%;
+    --border: 220 20% 16%;
+    --input: 220 20% 16%;
     --ring: 217 100% 64%;
 
     --radius: 0.75rem;
@@ -38,10 +38,10 @@
 }
 
 /* ============================================================
-   Базовые стили
+   Переменные проекта
    ============================================================ */
 :root {
-  --color-bg: #000000;
+  --color-bg: #05070a;
   --color-fg: #ffffff;
   --color-accent: #4690FF;
   --color-surface: rgba(255, 255, 255, 0.05);
@@ -54,17 +54,15 @@
 }
 
 html {
-  /* Плавная прокрутка + компенсация фиксированной навигации */
   scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  background: #000;
+  background: #05070a;
   color: var(--color-fg);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
-  font-variation-settings: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -75,62 +73,65 @@ body {
 }
 
 /* ============================================================
-   Живой фон: три мягких свечения + шум
+   Фон №1. Гранёные «стеклянные» фасетки (SVG-паттерн)
    ============================================================ */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: -2;
   pointer-events: none;
-  background:
-    radial-gradient(
-      ellipse 80% 50% at 50% -10%,
-      rgba(70, 144, 255, 0.25),
-      transparent 60%
-    ),
-    radial-gradient(
-      ellipse 60% 50% at 90% 100%,
-      rgba(70, 144, 255, 0.08),
-      transparent 60%
-    ),
-    radial-gradient(
-      ellipse 50% 40% at 10% 50%,
-      rgba(120, 80, 255, 0.06),
-      transparent 60%
-    );
-  animation: bgShift 20s ease-in-out infinite alternate;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='1600' height='900' fill='%2305070a'/%3E%3Cg stroke='rgba(255,255,255,0.05)' stroke-width='1' stroke-linejoin='round'%3E%3Cpolygon points='0,0 500,0 420,320 0,260' fill='%230b0f16'/%3E%3Cpolygon points='500,0 950,0 850,280 420,320' fill='%23080c12'/%3E%3Cpolygon points='950,0 1600,0 1600,300 1250,240 850,280' fill='%230d1118'/%3E%3Cpolygon points='0,260 420,320 360,620 0,660' fill='%23070a10'/%3E%3Cpolygon points='420,320 850,280 950,560 600,700 360,620' fill='%230c1017'/%3E%3Cpolygon points='850,280 1250,240 1600,300 1600,620 1200,600 950,560' fill='%230a0e14'/%3E%3Cpolygon points='0,660 360,620 600,700 500,900 0,900' fill='%23080c12'/%3E%3Cpolygon points='600,700 950,560 1200,600 1100,900 500,900' fill='%23060a10'/%3E%3Cpolygon points='1200,600 1600,620 1600,900 1100,900' fill='%230a0e14'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  opacity: 0.95;
 }
 
-/* Лёгкий шум поверх фона — убирает "пластиковость" чёрного */
+/* ============================================================
+   Фон №2. Синие свечения + виньетка + шум
+   ============================================================ */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
-}
+  background:
+    /* Синее свечение сверху — «холод» */
+    radial-gradient(
+      ellipse 75% 45% at 50% -10%,
+      rgba(70, 144, 255, 0.22),
+      transparent 65%
+    ),
+    /* Свечение справа-снизу */
+    radial-gradient(
+      ellipse 55% 60% at 95% 100%,
+      rgba(70, 144, 255, 0.09),
+      transparent 70%
+    ),
+    /* Тонкая холодная подсветка слева */
+    radial-gradient(
+      ellipse 40% 50% at 0% 50%,
+      rgba(120, 80, 255, 0.05),
+      transparent 70%
+    ),
+    /* Виньетка по краям */
+    radial-gradient(
+      ellipse 100% 80% at 50% 50%,
+      transparent 30%,
+      rgba(0, 0, 0, 0.55) 100%
+    );
 
-@keyframes bgShift {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  100% {
-    transform: translate3d(-2%, 2%, 0) scale(1.05);
-  }
-}
-
-/* Уважаем настройки пользователя */
-@media (prefers-reduced-motion: reduce) {
-  body::before {
-    animation: none;
-  }
-  html {
-    scroll-behavior: auto;
-  }
+  /* Плёночный шум для «фактуры стекла» */
+  background-image:
+    radial-gradient(ellipse 75% 45% at 50% -10%, rgba(70, 144, 255, 0.22), transparent 65%),
+    radial-gradient(ellipse 55% 60% at 95% 100%, rgba(70, 144, 255, 0.09), transparent 70%),
+    radial-gradient(ellipse 40% 50% at 0% 50%, rgba(120, 80, 255, 0.05), transparent 70%),
+    radial-gradient(ellipse 100% 80% at 50% 50%, transparent 30%, rgba(0, 0, 0, 0.55) 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-blend-mode: normal, normal, normal, normal, overlay;
+  background-size: auto, auto, auto, auto, 200px 200px;
 }
 
 /* ============================================================
@@ -147,7 +148,7 @@ h1 {
 }
 
 /* ============================================================
-   Ссылки и элементы управления
+   Ссылки и кнопки
    ============================================================ */
 a {
   color: inherit;
@@ -195,12 +196,21 @@ button:not(:disabled):active {
   letter-spacing: -0.02em;
 }
 
-/* Стеклянная поверхность — используется в кнопках и навигации */
+/* ============================================================
+   Glassmorphism-стекло
+   ============================================================ */
 .glass {
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 /* ============================================================
@@ -216,12 +226,16 @@ button:not(:disabled):active {
   font-size: 16px;
   cursor: pointer;
   letter-spacing: -0.01em;
-  box-shadow: 0 4px 20px rgba(70, 144, 255, 0.25);
+  box-shadow:
+    0 4px 20px rgba(70, 144, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transition: transform 0.12s ease, box-shadow 0.2s ease, opacity 0.15s ease;
 }
 
 .btn-primary:not(:disabled):hover {
-  box-shadow: 0 6px 28px rgba(70, 144, 255, 0.4);
+  box-shadow:
+    0 6px 28px rgba(70, 144, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .btn-primary:disabled {
@@ -233,12 +247,18 @@ button:not(:disabled):active {
 .input {
   width: 100%;
   padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.045);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.055) 0%,
+    rgba(255, 255, 255, 0.025) 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   outline: none;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
   font-size: 15px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .input::placeholder {
@@ -247,8 +267,12 @@ button:not(:disabled):active {
 
 .input:focus {
   border-color: rgba(70, 144, 255, 0.6);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 0 0 3px rgba(70, 144, 255, 0.12);
+  background: linear-gradient(
+    135deg,
+    rgba(70, 144, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  box-shadow: 0 0 0 3px rgba(70, 144, 255, 0.15);
 }
 
 .error-text {
@@ -258,7 +282,7 @@ button:not(:disabled):active {
 }
 
 /* ============================================================
-   Скроллбар (тонкий, в тему)
+   Скроллбар
    ============================================================ */
 ::-webkit-scrollbar {
   width: 8px;
@@ -275,7 +299,7 @@ button:not(:disabled):active {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.22);
 }
 
 /* ============================================================
@@ -286,5 +310,8 @@ button:not(:disabled):active {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
   }
 }
