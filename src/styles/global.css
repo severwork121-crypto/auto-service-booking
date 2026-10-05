@@ -1,0 +1,290 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Переменные shadcn (тёмная тема с акцентом #4690FF)
+   ============================================================ */
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 217 100% 64%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 217 100% 64%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 217 100% 64%;
+
+    --radius: 0.75rem;
+  }
+}
+
+/* ============================================================
+   Базовые стили
+   ============================================================ */
+:root {
+  --color-bg: #000000;
+  --color-fg: #ffffff;
+  --color-accent: #4690FF;
+  --color-surface: rgba(255, 255, 255, 0.05);
+  --color-border: rgba(255, 255, 255, 0.1);
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* Плавная прокрутка + компенсация фиксированной навигации */
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #000;
+  color: var(--color-fg);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
+  font-variation-settings: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  letter-spacing: -0.011em;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   Живой фон: три мягких свечения + шум
+   ============================================================ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 80% 50% at 50% -10%,
+      rgba(70, 144, 255, 0.25),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 90% 100%,
+      rgba(70, 144, 255, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 10% 50%,
+      rgba(120, 80, 255, 0.06),
+      transparent 60%
+    );
+  animation: bgShift 20s ease-in-out infinite alternate;
+}
+
+/* Лёгкий шум поверх фона — убирает "пластиковость" чёрного */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+@keyframes bgShift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(-2%, 2%, 0) scale(1.05);
+  }
+}
+
+/* Уважаем настройки пользователя */
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ============================================================
+   Типографика
+   ============================================================ */
+h1, h2, h3, h4 {
+  letter-spacing: -0.022em;
+  font-weight: 700;
+}
+
+h1 {
+  font-weight: 800;
+  letter-spacing: -0.028em;
+}
+
+/* ============================================================
+   Ссылки и элементы управления
+   ============================================================ */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  transition: transform 0.12s ease, opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+button:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+/* ============================================================
+   Утилиты
+   ============================================================ */
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.page {
+  padding-bottom: 120px;
+}
+
+.section {
+  padding: 40px 0;
+}
+
+.section__title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 16px;
+  letter-spacing: -0.02em;
+}
+
+/* Стеклянная поверхность — используется в кнопках и навигации */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* ============================================================
+   Кнопки и инпуты
+   ============================================================ */
+.btn-primary {
+  background: linear-gradient(135deg, #4690FF 0%, #3a7fe0 100%);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 24px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 20px rgba(70, 144, 255, 0.25);
+  transition: transform 0.12s ease, box-shadow 0.2s ease, opacity 0.15s ease;
+}
+
+.btn-primary:not(:disabled):hover {
+  box-shadow: 0 6px 28px rgba(70, 144, 255, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  font-size: 15px;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.input:focus {
+  border-color: rgba(70, 144, 255, 0.6);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(70, 144, 255, 0.12);
+}
+
+.error-text {
+  color: #ff6b6b;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* ============================================================
+   Скроллбар (тонкий, в тему)
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================================
+   Анимации
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
