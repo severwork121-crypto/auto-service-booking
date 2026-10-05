@@ -1,24 +1,71 @@
-import { type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 
-export function GlassButton({ children, onClick, className = '' }: {
-  children: ReactNode; onClick?: () => void; className?: string;
-}) {
+interface Props {
+  children: ReactNode;
+  onClick?: () => void;
+  className?: string;
+}
+
+export function GlassButton({ children, onClick, className = '' }: Props) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const mod = await import('liquid-gl');
+        const liquidGL = (mod as any).default ?? mod;
+        if (!cancelled && ref.current && typeof liquidGL === 'function') {
+          liquidGL(ref.current, {
+            refraction: 0.15,
+            frost: 0.3,
+            edgeHighlight: true,
+          });
+        }
+      } catch {
+        // liquid-gl недоступен — используется CSS-фолбэк
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
-    <button onClick={onClick} className={className} style={{
-      position: 'relative',
-      padding: '16px 32px',
-      borderRadius: 18,
-      color: '#fff',
-      fontWeight: 600,
-      fontSize: 17,
-      background: 'rgba(255,255,255,0.08)',
-      border: '1px solid rgba(255,255,255,0.18)',
-      backdropFilter: 'blur(16px)',
-      WebkitBackdropFilter: 'blur(16px)',
-      cursor: 'pointer',
-      textShadow: '0 1px 2px rgba(0,0,0,0.4)',
-      isolation: 'isolate'
-    }}>
+    <button
+      ref={ref}
+      onClick={onClick}
+      className={className}
+      style={{
+        position: 'relative',
+        width: '100%',
+        padding: '16px 32px',
+        borderRadius: 16,
+        color: '#fff',
+        fontWeight: 600,
+        fontSize: 16,
+        letterSpacing: '-0.01em',
+        background:
+          'linear-gradient(135deg, rgba(70,144,255,0.28) 0%, rgba(70,144,255,0.16) 100%)',
+        border: '1px solid rgba(70,144,255,0.45)',
+        backdropFilter: 'blur(16px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+        boxShadow:
+          'inset 0 1px 0 rgba(255,255,255,0.18), 0 4px 24px rgba(70,144,255,0.25)',
+        cursor: 'pointer',
+        textShadow: '0 1px 2px rgba(0,0,0,0.4)',
+        isolation: 'isolate',
+        transition: 'transform 0.12s ease, box-shadow 0.2s ease',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow =
+          'inset 0 1px 0 rgba(255,255,255,0.25), 0 6px 32px rgba(70,144,255,0.4)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow =
+          'inset 0 1px 0 rgba(255,255,255,0.18), 0 4px 24px rgba(70,144,255,0.25)';
+      }}
+    >
       {children}
     </button>
   );
