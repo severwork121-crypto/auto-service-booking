@@ -73,31 +73,17 @@ body {
 }
 
 /* ============================================================
-   Фон №1. Гранёные «стеклянные» фасетки (SVG-паттерн)
+   Фон: гранёные фасетки + синие свечения + шум
+   Всё в одном ::before с несколькими слоями
    ============================================================ */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  z-index: -2;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='1600' height='900' fill='%2305070a'/%3E%3Cg stroke='rgba(255,255,255,0.05)' stroke-width='1' stroke-linejoin='round'%3E%3Cpolygon points='0,0 500,0 420,320 0,260' fill='%230b0f16'/%3E%3Cpolygon points='500,0 950,0 850,280 420,320' fill='%23080c12'/%3E%3Cpolygon points='950,0 1600,0 1600,300 1250,240 850,280' fill='%230d1118'/%3E%3Cpolygon points='0,260 420,320 360,620 0,660' fill='%23070a10'/%3E%3Cpolygon points='420,320 850,280 950,560 600,700 360,620' fill='%230c1017'/%3E%3Cpolygon points='850,280 1250,240 1600,300 1600,620 1200,600 950,560' fill='%230a0e14'/%3E%3Cpolygon points='0,660 360,620 600,700 500,900 0,900' fill='%23080c12'/%3E%3Cpolygon points='600,700 950,560 1200,600 1100,900 500,900' fill='%23060a10'/%3E%3Cpolygon points='1200,600 1600,620 1600,900 1100,900' fill='%230a0e14'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  opacity: 0.95;
-}
-
-/* ============================================================
-   Фон №2. Синие свечения + виньетка + шум
-   ============================================================ */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
+  background-color: #05070a;
+  background-image:
     /* Синее свечение сверху — «холод» */
     radial-gradient(
       ellipse 75% 45% at 50% -10%,
@@ -121,17 +107,16 @@ body::after {
       ellipse 100% 80% at 50% 50%,
       transparent 30%,
       rgba(0, 0, 0, 0.55) 100%
-    );
-
-  /* Плёночный шум для «фактуры стекла» */
-  background-image:
-    radial-gradient(ellipse 75% 45% at 50% -10%, rgba(70, 144, 255, 0.22), transparent 65%),
-    radial-gradient(ellipse 55% 60% at 95% 100%, rgba(70, 144, 255, 0.09), transparent 70%),
-    radial-gradient(ellipse 40% 50% at 0% 50%, rgba(120, 80, 255, 0.05), transparent 70%),
-    radial-gradient(ellipse 100% 80% at 50% 50%, transparent 30%, rgba(0, 0, 0, 0.55) 100%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-  background-blend-mode: normal, normal, normal, normal, overlay;
-  background-size: auto, auto, auto, auto, 200px 200px;
+    ),
+    /* Гранёные фасетки (SVG с закодированными пробелами) */
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201600%20900'%20preserveAspectRatio='xMidYMid%20slice'%3E%3Cg%20stroke='rgba(255,255,255,0.06)'%20stroke-width='1'%20stroke-linejoin='round'%3E%3Cpolygon%20points='0,0%20500,0%20420,320%200,260'%20fill='%230b0f16'/%3E%3Cpolygon%20points='500,0%20950,0%20850,280%20420,320'%20fill='%23080c12'/%3E%3Cpolygon%20points='950,0%201600,0%201600,300%201250,240%20850,280'%20fill='%230d1118'/%3E%3Cpolygon%20points='0,260%20420,320%20360,620%200,660'%20fill='%23070a10'/%3E%3Cpolygon%20points='420,320%20850,280%20950,560%20600,700%20360,620'%20fill='%230c1017'/%3E%3Cpolygon%20points='850,280%201250,240%201600,300%201600,620%201200,600%20950,560'%20fill='%230a0e14'/%3E%3Cpolygon%20points='0,660%20360,620%20600,700%20500,900%200,900'%20fill='%23080c12'/%3E%3Cpolygon%20points='600,700%20950,560%201200,600%201100,900%20500,900'%20fill='%23060a10'/%3E%3Cpolygon%20points='1200,600%201600,620%201600,900%201100,900'%20fill='%230a0e14'/%3E%3C/g%3E%3C/svg%3E"),
+    /* Шум для «фактуры стекла» */
+    url("data:image/svg+xml,%3Csvg%20viewBox='0%200%20200%20200'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.9'%20numOctaves='2'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'%20opacity='0.5'/%3E%3C/svg%3E");
+  background-size: auto, auto, auto, auto, cover, 200px 200px;
+  background-position: center, center, center, center, center, top left;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+  background-attachment: fixed, fixed, fixed, fixed, fixed, fixed;
+  background-blend-mode: normal, normal, normal, normal, normal, overlay;
 }
 
 /* ============================================================
