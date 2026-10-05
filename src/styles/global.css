@@ -1,17 +1,6 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Шрифт Nuqun (локальный, офлайн-ready)
-   ============================================================ */
-@font-face {
-  font-family: 'Nuqun';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/Nuqun-Regular.ttf') format('truetype');
-}
-
-/* ============================================================
    shadcn: тёмная тема, синий акцент #4690FF
    ============================================================ */
 @layer base {
@@ -72,7 +61,8 @@ body {
   margin: 0;
   background: #04060a;
   color: var(--color-fg);
-  font-family: 'Nuqun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Manrope Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-feature-settings: 'ss01', 'ss02', 'cv01', 'cv11';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
